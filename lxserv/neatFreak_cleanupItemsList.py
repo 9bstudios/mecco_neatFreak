@@ -13,6 +13,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
         self.dyna_Add('del_empty_meshes', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_empty_groups', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add('del_unused_tlocs', lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -22,11 +23,14 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             hints.Label("Delete empty mesh items")
         if index == 1:
             hints.Label("Delete empty group locators")
+        if index == 2:
+            hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
             self.attr_SetInt(0, 1)
             self.attr_SetInt(1, 1)
+            self.attr_SetInt(2, 1)
             self.after_first_run()
 
     @classmethod
@@ -37,25 +41,28 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         try:
             del_empty_meshes = self.dyna_String(0) if self.dyna_IsSet(0) else True
             del_empty_groups = self.dyna_String(1) if self.dyna_IsSet(1) else True
+            del_unused_tlocs = self.dyna_String(2) if self.dyna_IsSet(2) else True
+
+            hitlist = set()
 
             if del_empty_meshes:
-                hitlist = set()
                 for i in modo.Scene().locators:
                 	if i.type == 'mesh' and not i.geometry.numPolygons:
                 		hitlist.add(i)
 
-                for i in hitlist:
-                	modo.scene.current().removeItems(i)
-
             if del_empty_groups:
-                hitlist = set()
-
                 for i in modo.Scene().locators:
                 	if i.type == 'groupLocator' and not i.children():
                 		hitlist.add(i)
 
-                for i in hitlist:
-                	modo.scene.current().removeItems(i)
+            if del_unused_tlocs:
+                for i in modo.Scene().locators:
+                    if i.type == 'txtrLocator' and len(i.itemGraph('shadeLoc').reverse()) == 0:
+                        hitlist.add(i)
+
+            for i in hitlist:
+                modo.scene.current().removeItems(i)
+
 
         except:
             traceback.print_exc()
