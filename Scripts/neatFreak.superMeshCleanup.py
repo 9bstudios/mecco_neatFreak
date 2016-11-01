@@ -21,3 +21,8 @@ for i in range(3):
     lx.eval("!!vert.merge fixed false %s false true" % cj_tolerance)
     lx.eval("!!mesh.cleanup true true true true true true true true true true")
     lx.eval("!!poly.align")
+
+try:
+    lx.eval('vertMap.updateNormals')
+except:
+    pass
