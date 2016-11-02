@@ -60,8 +60,9 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                     if i.type == 'txtrLocator' and len(i.itemGraph('shadeLoc').reverse()) == 0:
                         hitlist.add(i)
 
-            for i in hitlist:
-                modo.scene.current().removeItems(i)
+            for hit in hitlist:
+                # TD SDK removeItems() method crashes on some groups. This is more robust.
+                lx.eval("item.delete item:{%s}" % hit.id)
 
 
         except:

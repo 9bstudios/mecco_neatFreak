@@ -95,10 +95,10 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                         hitlist.add(m)
 
             for hit in hitlist:
-                scene.removeItems(hit,True)
+                # TD SDK removeItems() method crashes on some groups. This is more robust.
+                lx.eval("item.delete item:{%s}" % hit.id)
 
         except:
             traceback.print_exc()
-
 
 lx.bless(CMD_neatFreak, NAME_CMD)
