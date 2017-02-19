@@ -50,6 +50,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
         self.dyna_Add('del_empty', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add('del_unused_image_clips', lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -59,6 +60,8 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             hints.Label("Delete empty groups")
         if index == 1:
             hints.Label("Delete unused groups")
+        if index == 2:
+            hints.Label("Delete unused image clips")
 
     def cmd_DialogInit(self):
         if self._first_run:
@@ -78,6 +81,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             for m in scene.iterItems(lx.symbol.sITYPE_MASK):
                 del_empty = self.dyna_String(0) if self.dyna_IsSet(0) else True
                 del_unused = self.dyna_String(1) if self.dyna_IsSet(1) else True
+                del_unused_image_clips = self.dyna_String(2) if self.dyna_IsSet(2) else True
 
                 # delete empty groups
                 if not m.children() and del_empty:
@@ -93,6 +97,18 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                     # delete obsolete (unused) polytag groups
                     if (sICHAN_MASK_PTAG and not get_layers_by_pTag(sICHAN_MASK_PTAG,i_POLYTAG)):
                         hitlist.add(m)
+
+                # delete unused image clips
+                if del_unused_image_clips:
+                   
+                   # We will get the 'shadeLoc' graph and check if there are any connections.
+                   graph = m.itemGraph('shadeLoc')
+                   
+                   # If no connections are found for this graph, we delete the clip item from the scene.
+                   if len(graph.forward()) is 0 and len(graph.reverse()) is 0:
+                   
+                      lx.out("Deleting clip: %s" % m.name)
+                      scene.removeItems(m)
 
             for hit in hitlist:
                 # TD SDK removeItems() method crashes on some groups. This is more robust.
