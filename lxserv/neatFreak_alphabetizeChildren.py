@@ -13,19 +13,9 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def basic_Execute(self, msg, flags):
         try:
-            items = list()
-
-            for item in lxu.select.ItemSelection().current():
-                items.append(item)
-	
-            for parent in items:
-                children = list()
-                for idx in xrange(parent.SubCount()):
-                    children.append(parent.SubByIndex(idx))
-                children.sort(key = lambda s : s.Name())
-		
-                for idx in xrange(len(children)):
-                    lx.eval("item.parent %(name)s %(parent)s %(index)d" % {"name" : children[idx].Name(), "parent" : parent.Name(), "index" : idx})
+            for item in modo.Scene().selected:
+                for child in sorted(item.children(), key=lambda x: x.name, reverse = True):
+                    child.setParent(child.parent, 0)
 
         except:
             traceback.print_exc()
