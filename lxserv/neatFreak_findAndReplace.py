@@ -72,8 +72,8 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         try:
             search_string = self.dyna_String(0)
             replace_string = self.dyna_String(1)
-            ignore_case = True if self.dyna_String(2) == 'true' else False
-            use_regexp = True if self.dyna_String(3) == 'true' else False
+            ignore_case = self.dyna_Bool(2)
+            use_regexp = self.dyna_Bool(3)
 
             # Building replace function based of ignore_case and use_regexp flags
             if ignore_case:
