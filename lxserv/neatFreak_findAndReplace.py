@@ -30,6 +30,19 @@ def replaceRegexpIgnoreCase(string, search, replace):
     pattern = re.compile(search, re.IGNORECASE)
     return pattern.sub(replace, string)
 
+# Recursive generator to iterates over all nodes in sub tree
+def iterTreeNodesOfRoot(node):
+	yield node
+	for child in node.children():
+		for res in iterTreeNodesOfRoot(child):
+			yield res
+			
+# Recursive generator to iterates over all sub trees rooted by elements of 'nodes'
+def iterTreeNodes(nodes):
+	for node in nodes:
+		for res in iterTreeNodesOfRoot(node):
+			yield res
+		
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -41,6 +54,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         self.dyna_Add ('fr_replace', lx.symbol.sTYPE_STRING)
         self.dyna_Add('fr_ignore_case', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('fr_regexp', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add('fr_in_selected', lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -54,6 +68,8 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             hints.Label("Ignore case")
         elif index == 3:
             hints.Label("Use regexp")
+        elif index == 4:
+            hints.Label("Search in selected items")
         
 
     def cmd_DialogInit(self):
@@ -62,6 +78,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             self.attr_SetInt(1, 1)
             self.attr_SetInt(2, 1)
             self.attr_SetInt(3, 1)
+            self.attr_SetInt(4, 1)
             self.after_first_run()
 
     @classmethod
@@ -71,9 +88,19 @@ class CMD_neatFreak(lxu.command.BasicCommand):
     def basic_Execute(self, msg, flags):
         try:
             search_string = self.dyna_String(0)
+            # If search string is empty throw warning and return
+            if search_string == "":
+                modo.dialogs.alert("Empty Search String", "Search string is empty", dtype='warning')
+                return
             replace_string = self.dyna_String(1)
             ignore_case = self.dyna_Bool(2)
             use_regexp = self.dyna_Bool(3)
+            in_selected = self.dyna_Bool(4)
+
+            scene = modo.Scene()
+            if in_selected and len(scene.selected) == 0:
+                modo.dialogs.alert("No Selection", "No items selected", dtype='warning')
+                return
 
             # Building replace function based of ignore_case and use_regexp flags
             if ignore_case:
@@ -88,8 +115,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                     replace = replaceStringCase
 
             # Replacing search_string in item names by replace_string.
-            scene = modo.Scene()
-            for item in scene.iterItems():
+            for item in (iterTreeNodes(scene.selected) if in_selected else scene.iterItems()):
                 newName = replace(item.name, search_string, replace_string)
                 # Assigning if name really changed. (Assuming name change will result GUI updates)
                 if newName != item.name:
