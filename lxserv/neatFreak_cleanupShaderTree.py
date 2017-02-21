@@ -67,7 +67,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         self.dyna_Add('del_empty', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused_image_clips', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused_texture_locators')
+        self.dyna_Add('del_unused_texture_locators', lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -80,12 +80,14 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         if index == 2:
             hints.Label("Delete unused image clips")
         if index == 3:
-			hints.Label("Delete unused texture locators")
+            hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
             self.attr_SetInt(0, 1)
             self.attr_SetInt(1, 1)
+            self.attr_SetInt(2, 1)
+            self.attr_SetInt(3, 1)
             self.after_first_run()
 
     @classmethod
@@ -101,6 +103,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                 del_empty = self.dyna_Bool(0)
                 del_unused = self.dyna_Bool(1)
                 del_unused_image_clips = self.dyna_Bool(2)
+                del_unused_texture_locators = self.dyna_Bool(3)
 
                 # delete empty groups
                 if not m.children() and del_empty:
@@ -135,7 +138,6 @@ class CMD_neatFreak(lxu.command.BasicCommand):
                      hitlist.add(imageClip)
 
             # delete unused texture locators
-            del_unused_texture_locators = self.dyna_String(3) if self.dyna_IsSet(3) else True
             if del_unused_texture_locators:
 
                shadeloc_graph = lx.object.ItemGraph(scene.GraphLookup(lx.symbol.sGRAPH_SHADELOC))
