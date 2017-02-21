@@ -67,7 +67,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         self.dyna_Add('del_empty', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused_image_clips', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused_texture_locators')
+        self.dyna_Add('del_unused_texture_locators', lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -80,13 +80,15 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         if index == 2:
             hints.Label("Delete unused image clips")
         if index == 3:
-			hints.Label("Delete unused texture locators")
+            hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
-            self.attr_SetInt(0, 1)
-            self.attr_SetInt(1, 1)
-            self.after_first_run()
+           self.attr_SetInt(0, 1)
+           self.attr_SetInt(1, 1)
+           self.attr_SetInt(2, 1)
+           self.attr_SetInt(3, 1)
+           self.after_first_run()
 
     @classmethod
     def after_first_run(cls):
@@ -100,7 +102,6 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             for m in scene.iterItems(lx.symbol.sITYPE_MASK):
                 del_empty = self.dyna_Bool(0)
                 del_unused = self.dyna_Bool(1)
-                del_unused_image_clips = self.dyna_Bool(2)
 
                 # delete empty groups
                 if not m.children() and del_empty:
@@ -119,34 +120,33 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
             # Loop through all image clips
             for imageClip in scene.items( itype=lx.symbol.sITYPE_VIDEOSTILL ):
-
-               del_unused_image_clips = self.dyna_String(2) if self.dyna_IsSet(2) else True
-
-               # delete unused image clips
-               if del_unused_image_clips:
- 
-                  # We will get the 'shadeLoc' graph and check if there are any connections.
-                  graph = imageClip.itemGraph('shadeLoc')
- 
-                  # If no connections are found for this graph, we delete the clip item from the scene.
-                  if len(graph.forward()) is 0 and len(graph.reverse()) is 0:
- 
-                     lx.out("Deleting clip: %s" % imageClip.name)
-                     hitlist.add(imageClip)
-
+                del_unused_image_clips = self.dyna_Bool(2)
+            
+                # delete unused image clips
+                if del_unused_image_clips:
+            
+                   # We will get the 'shadeLoc' graph and check if there are any connections.
+                   graph = imageClip.itemGraph('shadeLoc')
+            
+                   # If no connections are found for this graph, we delete the clip item from the scene.
+                   if len(graph.forward()) is 0 and len(graph.reverse()) is 0:
+            
+                      lx.out("Deleting clip: %s" % imageClip.name)
+                      hitlist.add(imageClip)
+            
             # delete unused texture locators
-            del_unused_texture_locators = self.dyna_String(3) if self.dyna_IsSet(3) else True
+            del_unused_texture_locators = self.dyna_Bool(3)
             if del_unused_texture_locators:
-
-               shadeloc_graph = lx.object.ItemGraph(scene.GraphLookup(lx.symbol.sGRAPH_SHADELOC))
-
-               texlocs = get_items_by_type(lx.symbol.sITYPE_TEXTURELOC)
-               if texlocs:
-                   for texloc in texlocs:
-                       if (shadeloc_graph.FwdCount(texloc) == 0) and (shadeloc_graph.RevCount(texloc) == 0):
-						   
-                           lx.out("Deleting texture locator: %s" % texloc.Ident().name)
-                           hitlist.add(texloc.Ident())
+            
+                shadeloc_graph = lx.object.ItemGraph(scene.GraphLookup(lx.symbol.sGRAPH_SHADELOC))
+            
+                texlocs = get_items_by_type(lx.symbol.sITYPE_TEXTURELOC)
+                if texlocs:
+                    for texloc in texlocs:
+                        if (shadeloc_graph.FwdCount(texloc) == 0) and (shadeloc_graph.RevCount(texloc) == 0):
+ 		   
+                            lx.out("Deleting texture locator: %s" % texloc.Ident().name)
+                            hitlist.add(texloc.Ident())
 
             for hit in hitlist:
                 # TD SDK removeItems() method crashes on some groups. This is more robust.
