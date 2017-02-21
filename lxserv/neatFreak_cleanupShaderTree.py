@@ -4,35 +4,45 @@ import lx, lxu, modo, traceback
 
 NAME_CMD = "neatFreak.cleanupShaderTree"
 
-
+# Returns a list of all mesh layers containing any of the provided pTag(s)
+# of type i_POLYTAG, e.g. lx.symbol.i_POLYTAG_MATERIAL.
+# pTag can be a tag or list of tags.
 def get_layers_by_pTag(pTags,i_POLYTAG=lx.symbol.i_POLYTAG_MATERIAL):
     """Returns a list of all mesh layers containing any of the provided pTag(s)
     of type i_POLYTAG, e.g. lx.symbol.i_POLYTAG_MATERIAL.
     """
-
+    
+    # If signle value is passed put into list
     if not isinstance(pTags,list):
         pTags = [pTags]
 
     scene = modo.Scene()
 
     mm = set()
+    # Collect result meshes in mm
     for m in scene.meshes:
+        # For each polygon tag
         for i in range(m.geometry.internalMesh.PTagCount(i_POLYTAG)):
             tag = m.geometry.internalMesh.PTagByIndex(i_POLYTAG,i)
+            # If need to be found in i_POLYTAG_PIC (polygon belongs to each selection set in tag)
             if i_POLYTAG == lx.symbol.i_POLYTAG_PICK:
+                # Add mesh if one of selection sets present in pTags
                 if [i for i in tag.split(";") if i in pTags]:
                     mm.add(m)
             else:
+                # Add mesh if tag exists in pTags
                 if tag in pTags:
                     mm.add(m)
 
     return list(mm)
 
-
+# Returns an lx.symbol.i_POLYTAG_* symbol based on a mask
+# item's lx.symbol.sICHAN_MASK_PTYP channel string.
 def get_i_POLYTAG(sICHAN_MASK_PTYP):
     """Returns an lx.symbol.i_POLYTAG_* symbol based on a mask
     item's lx.symbol.sICHAN_MASK_PTYP channel string."""
 
+    # Return polygon tag type corresponding to channel string
     return {
         '':lx.symbol.i_POLYTAG_MATERIAL,
         'Material':lx.symbol.i_POLYTAG_MATERIAL,
@@ -41,6 +51,7 @@ def get_i_POLYTAG(sICHAN_MASK_PTYP):
     }[sICHAN_MASK_PTYP]
 
 
+# Returns all items in the scene of type itype.
 def get_items_by_type(itype):
     """Returns all items in the scene of type itype."""
 
@@ -50,13 +61,14 @@ def get_items_by_type(itype):
     items = []
     # lookup the item type
     item_type = scene_service.ItemTypeLookup(itype)
-    # get a count of itype items in the scenr
+    # get a count of itype items in the scene
     numitems = current_scene.ItemCount(item_type)
     for x in range(numitems):
         items.append(current_scene.ItemByIndex(item_type, x))
     return items
 
 
+# Standard command implementation
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -74,6 +86,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def cmd_DialogInit(self):
         if self._first_run:
+            # At first run check all checkboxes
             self.attr_SetInt(0, 1)
             self.attr_SetInt(1, 1)
             self.attr_SetInt(2, 1)

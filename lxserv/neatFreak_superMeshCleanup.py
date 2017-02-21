@@ -4,6 +4,7 @@ import lx, lxu, modo, traceback
 
 NAME_CMD = 'neatFreak.superMeshCleanup'
 
+# Standard command interface
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -18,6 +19,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def cmd_DialogInit(self):
         if self._first_run:
+            # At first run assign 1.0 as default tolerance
             self.attr_SetFlt(0, 1.0)
             self.after_first_run()
 

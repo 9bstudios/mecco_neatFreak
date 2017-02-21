@@ -43,6 +43,7 @@ def iterTreeNodes(nodes):
 		for res in iterTreeNodesOfRoot(node):
 			yield res
 		
+# Standard command implementation
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -61,6 +62,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def cmd_DialogInit(self):
         if self._first_run:
+            # Assign default values at first run
             self.attr_SetString(0, "")
             self.attr_SetString(1, "")
             self.attr_SetInt(2, 0)

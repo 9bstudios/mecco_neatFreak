@@ -4,6 +4,7 @@ import lx, lxu, modo, traceback
 
 NAME_CMD = 'neatFreak.addSuffix'
 
+# Standard command implementation
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -18,6 +19,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def cmd_DialogInit(self):
         if self._first_run:
+            # At first run assign empty string to suffix
             self.attr_SetString(0, "")
             self.after_first_run()
 
