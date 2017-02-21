@@ -41,6 +41,22 @@ def get_i_POLYTAG(sICHAN_MASK_PTYP):
     }[sICHAN_MASK_PTYP]
 
 
+def get_items_by_type(itype):
+    """Returns all items in the scene of type itype."""
+
+    scene_service = lx.service.Scene()
+    current_scene = lxu.select.SceneSelection().current()
+
+    items = []
+    # lookup the item type
+    item_type = scene_service.ItemTypeLookup(itype)
+    # get a count of itype items in the scenr
+    numitems = current_scene.ItemCount(item_type)
+    for x in range(numitems):
+        items.append(current_scene.ItemByIndex(item_type, x))
+    return items
+
+
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -51,6 +67,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
         self.dyna_Add('del_empty', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused', lx.symbol.sTYPE_BOOLEAN)
         self.dyna_Add('del_unused_image_clips', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add('del_unused_texture_locators')
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
@@ -62,6 +79,8 @@ class CMD_neatFreak(lxu.command.BasicCommand):
             hints.Label("Delete unused groups")
         if index == 2:
             hints.Label("Delete unused image clips")
+        if index == 3:
+			hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
@@ -113,6 +132,20 @@ class CMD_neatFreak(lxu.command.BasicCommand):
  
                      lx.out("Deleting clip: %s" % imageClip.name)
                      hitlist.add(imageClip)
+
+            # delete unused texture locators
+            del_unused_texture_locators = self.dyna_String(3) if self.dyna_IsSet(3) else True
+            if del_unused_texture_locators:
+
+               shadeloc_graph = lx.object.ItemGraph(scene.GraphLookup(lx.symbol.sGRAPH_SHADELOC))
+
+               texlocs = get_items_by_type(lx.symbol.sITYPE_TEXTURELOC)
+               if texlocs:
+                   for texloc in texlocs:
+                       if (shadeloc_graph.FwdCount(texloc) == 0) and (shadeloc_graph.RevCount(texloc) == 0):
+						   
+                           lx.out("Deleting texture locator: %s" % texloc.Ident().name)
+                           hitlist.add(texloc.Ident())
 
             for hit in hitlist:
                 # TD SDK removeItems() method crashes on some groups. This is more robust.
