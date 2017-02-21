@@ -4,6 +4,7 @@ import lx, lxu, modo, traceback
 
 NAME_CMD = 'neatFreak.alphabetizeChildren'
 
+# Standard command implementation
 class CMD_neatFreak(lxu.command.BasicCommand):
 
     _first_run = True
@@ -16,6 +17,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def basic_Execute(self, msg, flags):
         try:
+            # For each selected item sort children and move to new position
             for item in modo.Scene().selected:
                 for child in sorted(item.children(), key=lambda x: x.name, reverse = True):
                     child.setParent(child.parent, 0)
