@@ -11,14 +11,10 @@ class CMD_neatFreak(lxu.command.BasicCommand):
     def __init__(self):
         lxu.command.BasicCommand.__init__(self)
 
-        self.dyna_Add ('sm_mergingTolerance', lx.symbol.sTYPE_DISTANCE)
+        self.dyna_Add ("mTolerance", lx.symbol.sTYPE_DISTANCE)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
-
-    def arg_UIHints(self, index, hints):
-        if index == 0:
-            hints.Label("Merging Tolerance")
 
     def cmd_DialogInit(self):
         if self._first_run:
