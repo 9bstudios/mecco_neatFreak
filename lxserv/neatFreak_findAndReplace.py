@@ -50,35 +50,22 @@ class CMD_neatFreak(lxu.command.BasicCommand):
     def __init__(self):
         lxu.command.BasicCommand.__init__(self)
 
-        self.dyna_Add ('fr_search', lx.symbol.sTYPE_STRING)
-        self.dyna_Add ('fr_replace', lx.symbol.sTYPE_STRING)
-        self.dyna_Add('fr_ignore_case', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('fr_regexp', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('fr_in_selected', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add ("search", lx.symbol.sTYPE_STRING)
+        self.dyna_Add ("replace", lx.symbol.sTYPE_STRING)
+        self.dyna_Add("ignoreCase", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("regexp", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("selected", lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
 
-    def arg_UIHints(self, index, hints):
-        if index == 0:
-            hints.Label("Search")
-        elif index == 1:
-            hints.Label("Replace")
-        elif index == 2:
-            hints.Label("Ignore case")
-        elif index == 3:
-            hints.Label("Use regexp")
-        elif index == 4:
-            hints.Label("Search in selected items")
-        
-
     def cmd_DialogInit(self):
         if self._first_run:
-            self.attr_SetInt(0, 1)
-            self.attr_SetInt(1, 1)
-            self.attr_SetInt(2, 1)
-            self.attr_SetInt(3, 1)
-            self.attr_SetInt(4, 1)
+            self.attr_SetString(0, "")
+            self.attr_SetString(1, "")
+            self.attr_SetInt(2, 0)
+            self.attr_SetInt(3, 0)
+            self.attr_SetInt(4, 0)
             self.after_first_run()
 
     @classmethod
