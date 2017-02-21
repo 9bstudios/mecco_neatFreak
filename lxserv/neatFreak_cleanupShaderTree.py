@@ -98,8 +98,9 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
             hitlist = set()
             for m in scene.iterItems(lx.symbol.sITYPE_MASK):
-                del_empty = self.dyna_String(0) if self.dyna_IsSet(0) else True
-                del_unused = self.dyna_String(1) if self.dyna_IsSet(1) else True
+                del_empty = self.dyna_Bool(0)
+                del_unused = self.dyna_Bool(1)
+                del_unused_image_clips = self.dyna_Bool(2)
 
                 # delete empty groups
                 if not m.children() and del_empty:

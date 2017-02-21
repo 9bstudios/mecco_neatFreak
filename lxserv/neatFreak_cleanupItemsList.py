@@ -39,9 +39,9 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
     def basic_Execute(self, msg, flags):
         try:
-            del_empty_meshes = self.dyna_String(0) if self.dyna_IsSet(0) else True
-            del_empty_groups = self.dyna_String(1) if self.dyna_IsSet(1) else True
-            del_unused_tlocs = self.dyna_String(2) if self.dyna_IsSet(2) else True
+            del_empty_meshes = self.dyna_Bool(0)
+            del_empty_groups = self.dyna_Bool(1)
+            del_unused_tlocs = self.dyna_Bool(2)
 
             hitlist = set()
 
