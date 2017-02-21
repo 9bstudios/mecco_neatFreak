@@ -2,7 +2,7 @@
 
 import lx, lxu, modo, traceback
 
-NAME_CMD = 'neatFreak.cleanupShaderTree'
+NAME_CMD = "neatFreak.cleanupShaderTree"
 
 
 def get_layers_by_pTag(pTags,i_POLYTAG=lx.symbol.i_POLYTAG_MATERIAL):
@@ -64,23 +64,13 @@ class CMD_neatFreak(lxu.command.BasicCommand):
     def __init__(self):
         lxu.command.BasicCommand.__init__(self)
 
-        self.dyna_Add('del_empty', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused_image_clips', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused_texture_locators', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("emptyGroups", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("unusedGroups", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("unusedIClips", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("unusedTLocs", lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
-
-    def arg_UIHints(self, index, hints):
-        if index == 0:
-            hints.Label("Delete empty groups")
-        if index == 1:
-            hints.Label("Delete unused groups")
-        if index == 2:
-            hints.Label("Delete unused image clips")
-        if index == 3:
-            hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
