@@ -11,20 +11,12 @@ class CMD_neatFreak(lxu.command.BasicCommand):
     def __init__(self):
         lxu.command.BasicCommand.__init__(self)
 
-        self.dyna_Add('del_empty_meshes', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_empty_groups', lx.symbol.sTYPE_BOOLEAN)
-        self.dyna_Add('del_unused_tlocs', lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("emptyMeshes", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("emptyGroups", lx.symbol.sTYPE_BOOLEAN)
+        self.dyna_Add("unusedTLocs", lx.symbol.sTYPE_BOOLEAN)
 
     def cmd_Flags(self):
         return lx.symbol.fCMD_POSTCMD | lx.symbol.fCMD_MODEL | lx.symbol.fCMD_UNDO
-
-    def arg_UIHints(self, index, hints):
-        if index == 0:
-            hints.Label("Delete empty mesh items")
-        if index == 1:
-            hints.Label("Delete empty group locators")
-        if index == 2:
-            hints.Label("Delete unused texture locators")
 
     def cmd_DialogInit(self):
         if self._first_run:
