@@ -48,14 +48,14 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
             # Collect empty groups if selected
             if del_empty_groups:
-                for i in modo.Scene().locators:
+                for i in [j for j in modo.Scene().iterItems() if j.isLocatorSuperType()]:
                         # Append locator if type is 'groupLocator' and it doesn't contain any child
                 	if i.type == 'groupLocator' and not i.children():
                 		hitlist.add(i)
 
             # Collect unused texture locators if selected
             if del_unused_tlocs:
-                for i in modo.Scene().locators:
+                for i in [j for j in modo.Scene().iterItems() if j.isLocatorSuperType()]:
                     # Append texture locator if sharedLoc graph is empty
                     if i.type == 'txtrLocator' and len(i.itemGraph('shadeLoc').reverse()) == 0:
                         hitlist.add(i)
