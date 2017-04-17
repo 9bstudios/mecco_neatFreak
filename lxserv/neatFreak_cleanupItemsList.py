@@ -41,7 +41,7 @@ class CMD_neatFreak(lxu.command.BasicCommand):
 
             # Collect empty meshes if selected
             if del_empty_meshes:
-                for i in modo.Scene().locators:
+                for i in [j for j in modo.Scene().iterItems() if j.isLocatorSuperType()]:
                         # Append locator if type is 'mesh' and it doesn't contain any polygons
                 	if i.type == 'mesh' and not i.geometry.numPolygons:
                 		hitlist.add(i)
